@@ -133,13 +133,8 @@ CLObject* init_driver() {
 //===============================================================================================================================================================  
 // START of assignment code section 
     // befor using the mutex need to init one 
-    pthread_mutex_t mutex;
-    err = pthread_mutex_init(&mutex, NULL);
-    if ( err != 0 ){
-        fprintf(stderr,"Error: Failed to create mutex: %d!\n",err);
-        exit(EXIT_FAILURE);
-    };
-    ocl->device_lock = mutex;
+    pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    ocl->device_lock = lock;
 
 
 // END of assignment code section 
