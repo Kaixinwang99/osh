@@ -133,7 +133,7 @@ CLObject* init_driver() {
 //===============================================================================================================================================================  
 // START of assignment code section 
     // befor using the mutex need to init one 
-    pthread_mutex_t mutex
+    pthread_mutex_t mutex;
     err = pthread_mutex_init(&mutex, NULL);
     if ( err != 0 ){
         fprintf(stderr,"Error: Failed to create mutex: %d!\n",err);
