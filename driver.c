@@ -234,6 +234,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
 
 	 if (!input1 || !input2 || !output || !status_buf){
 		fprintf(stderr, "Error: Failed to allocate buffer objects to device memory!\n");
+        pthread_mutex_unlock(&ocl->device_lock);
 		exit(EXIT_FAILURE);
      }
     // Write the data in input arrays into the device memory 
@@ -241,6 +242,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
         
         if(err!=0){
             fprintf(stderr, "Error: Failed to lock the thread.\n");
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
     
@@ -248,12 +250,14 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
         err = clEnqueueWriteBuffer(ocl->command_queue, input1, CL_TRUE, 0, sizeof(float) * buffer_size, input_buffer_1, 0, NULL, NULL);
         if (err != CL_SUCCESS){
             fprintf(stderr, "Error: Failed to write to input1: %d to device memory!\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
 
         err = clEnqueueWriteBuffer(ocl->command_queue, input2, CL_TRUE, 0, sizeof(float) * buffer_size, input_buffer_2, 0, NULL, NULL);
         if (err != CL_SUCCESS){
             fprintf(stderr, "Error: Failed to write to input2: %d to device memory!\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
   
@@ -264,36 +268,42 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
         if (err != CL_SUCCESS)
         {
             fprintf(stderr, "Error: Failed to set kernel arguments! %d\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
         err = clSetKernelArg(ocl->kernel, 1, sizeof(cl_mem), &input2);
         if (err != CL_SUCCESS)
         {
             fprintf(stderr, "Error: Failed to set kernel arguments! %d\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
         err = clSetKernelArg(ocl->kernel, 2, sizeof(cl_mem), &output);
         if (err != CL_SUCCESS)
         {
             fprintf(stderr, "Error: Failed to set kernel arguments! %d\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
         err = clSetKernelArg(ocl->kernel, 3, sizeof(cl_mem), &status_buf);
         if (err != CL_SUCCESS)
         {
             fprintf(stderr, "Error: Failed to set kernel arguments! %d\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
         err = clSetKernelArg(ocl->kernel, 4, sizeof(unsigned int), &w1);
         if (err != CL_SUCCESS)
         {
             fprintf(stderr, "Error: Failed to set kernel arguments! %d\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
         err = clSetKernelArg(ocl->kernel, 5, sizeof(unsigned int), &w2);
         if (err != CL_SUCCESS)
         {
             fprintf(stderr, "Error: Failed to set kernel arguments! %d\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
         err = clSetKernelArg(ocl->kernel, 6, sizeof(unsigned int), &buffer_size);
@@ -301,6 +311,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
         if (err != CL_SUCCESS)
         {
             fprintf(stderr, "Error: Failed to set kernel arguments! %d\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
             exit(EXIT_FAILURE);
         }
   
@@ -310,6 +321,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
 	    if (err != CL_SUCCESS)
 	    {
 		    fprintf(stderr, "Error: Failed to execute kernel! %d\n", err);
+            pthread_mutex_unlock(&ocl->device_lock);
 		    exit(EXIT_FAILURE);
 	    }
 	    pthread_mutex_unlock(&ocl->device_lock);
