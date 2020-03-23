@@ -133,6 +133,7 @@ CLObject* init_driver() {
 //===============================================================================================================================================================  
 // START of assignment code section 
     // befor using the mutex need to init one 
+    pthread_mutex_t mutex
     err = pthread_mutex_init(&mutex, NULL);
     if ( err != 0 ){
         fprintf(stderr,"Error: Failed to create mutex: %d!\n",err);
@@ -170,7 +171,7 @@ int shutdown_driver(CLObject* ocl) {
 //===============================================================================================================================================================  
 // START of assignment code section   
     // relaese device part
-    err = clReleaseDevice(ocl->device_id)
+    err = clReleaseDevice(ocl->device_id);
 
     if ( err != CL_SUCESS ){
             fprintf(stderr,"Error: Failed to release the device: %d!\n",err);
@@ -178,7 +179,7 @@ int shutdown_driver(CLObject* ocl) {
      };
 
     //after using the mutex then destory it 
-    err = pthread_mutex_destroy(pthread_mutex_t *mutex);
+    err = pthread_mutex_destroy(&mutex);
      if ( err != 0 ){
             fprintf(stderr,"Error: Failed to destroy mutex. \n");
         exit(EXIT_FAILURE);
@@ -226,7 +227,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
     // Create the buffer objects to link the input and output arrays
     // in device memory to the buffers in host memory
     
-    for (int iter=0; iter < max_iters; i++){
+    for (int iter=0; iter < max_iters; iter++){
         input1 = clCreateBuffer(ocl->context, CL_MEM_READ_ONLY, sizeof(float) * buffer_size, NULL, NULL);
 
 	    input2 = clCreateBuffer(ocl->context, CL_MEM_READ_ONLY, sizeof(float) * buffer_size, NULL, NULL);
