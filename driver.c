@@ -223,22 +223,22 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
     // Create the buffer objects to link the input and output arrays
     // in device memory to the buffers in host memory
     
-    for (int iter=0; iter < max_iters; iter++){
-        input1 = clCreateBuffer(ocl->context, CL_MEM_READ_ONLY, sizeof(float) * buffer_size, NULL, NULL);
+    err = pthread_mutex_lock(&ocl->device_lock);
+    input1 = clCreateBuffer(ocl->context, CL_MEM_READ_ONLY, sizeof(float) * buffer_size, NULL, NULL);
 
-	    input2 = clCreateBuffer(ocl->context, CL_MEM_READ_ONLY, sizeof(float) * buffer_size, NULL, NULL);
+	input2 = clCreateBuffer(ocl->context, CL_MEM_READ_ONLY, sizeof(float) * buffer_size, NULL, NULL);
 
-	    output = clCreateBuffer(ocl->context, CL_MEM_WRITE_ONLY, sizeof(float) * buffer_size, NULL, NULL);
+	output = clCreateBuffer(ocl->context, CL_MEM_WRITE_ONLY, sizeof(float) * buffer_size, NULL, NULL);
 
-	    status_buf = clCreateBuffer(ocl->context, CL_MEM_WRITE_ONLY, sizeof(float) * 1, NULL, NULL);
+	status_buf = clCreateBuffer(ocl->context, CL_MEM_WRITE_ONLY, sizeof(float) * 1, NULL, NULL);
 
-	    if (!input1 || !input2 || !output || !status_buf){
-		    fprintf(stderr, "Error: Failed to allocate buffer objects to device memory!\n");
-		    exit(EXIT_FAILURE);
-	    }
+	 if (!input1 || !input2 || !output || !status_buf){
+		fprintf(stderr, "Error: Failed to allocate buffer objects to device memory!\n");
+		exit(EXIT_FAILURE);
+     }
     // Write the data in input arrays into the device memory 
     //for the thread safe need to lock the thread during transfer the info 
-        err = pthread_mutex_lock(&ocl->device_lock);
+        
         if(err!=0){
             fprintf(stderr, "Error: Failed to lock the thread.\n");
             exit(EXIT_FAILURE);
@@ -340,7 +340,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
 			    exit(EXIT_FAILURE);
 		    }
 	    }
-    }
+    
   
     // Shutdown and cleanup
     
