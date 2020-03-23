@@ -175,7 +175,7 @@ int shutdown_driver(CLObject* ocl) {
      };
 
     //after using the mutex then destory it 
-    err = pthread_mutex_destroy(ocl->device_lock);
+    err = pthread_mutex_destroy(&ocl->device_lock);
      if ( err != 0 ){
             fprintf(stderr,"Error: Failed to destroy mutex. \n");
         exit(EXIT_FAILURE);
@@ -238,7 +238,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
 	    }
     // Write the data in input arrays into the device memory 
     //for the thread safe need to lock the thread during transfer the info 
-        err = pthread_mutex_lock(ocl->device_lock);
+        err = pthread_mutex_lock(&ocl->device_lock);
         if(err!=0){
             fprintf(stderr, "Error: Failed to lock the thread.\n");
             exit(EXIT_FAILURE);
@@ -312,7 +312,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
 		    fprintf(stderr, "Error: Failed to execute kernel! %d\n", err);
 		    exit(EXIT_FAILURE);
 	    }
-	    pthread_mutex_unlock(ocl->device_lock);
+	    pthread_mutex_unlock(&ocl->device_lock);
   
     // Wait for the command commands to get serviced before reading back results. This is the device sending an interrupt to the host    
     
