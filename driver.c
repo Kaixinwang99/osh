@@ -139,6 +139,7 @@ CLObject* init_driver() {
         fprintf(stderr,"Error: Failed to create mutex: %d!\n",err);
         exit(EXIT_FAILURE);
     };
+    ocl->locker = mutex
 
 
 // END of assignment code section 
@@ -173,13 +174,13 @@ int shutdown_driver(CLObject* ocl) {
     // relaese device part
     err = clReleaseDevice(ocl->device_id);
 
-    if ( err != CL_SUCESS ){
+    if ( err != CL_SUCCESS ){
             fprintf(stderr,"Error: Failed to release the device: %d!\n",err);
         exit(EXIT_FAILURE);
      };
 
     //after using the mutex then destory it 
-    err = pthread_mutex_destroy(&mutex);
+    err = pthread_mutex_destroy(ocl->locker);
      if ( err != 0 ){
             fprintf(stderr,"Error: Failed to destroy mutex. \n");
         exit(EXIT_FAILURE);
@@ -242,7 +243,7 @@ int run_driver(CLObject* ocl,unsigned int buffer_size,  int* input_buffer_1, int
 	    }
     // Write the data in input arrays into the device memory 
     //for the thread safe need to lock the thread during transfer the info 
-        err = pthread_mutex_lock(&mutex);
+        err = pthread_mutex_lock(ocl->locker);
         if(err!=0){
             fprintf(stderr, "Error: Failed to lock the thread.\n");
             exit(EXIT_FAILURE);
